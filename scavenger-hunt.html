@@ -7,62 +7,24 @@
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Ensure consistent page sizing and margins on printers */
         @page {
             size: Letter;
             margin: 0.5in;
         }
 
-        /* Custom styles for printing */
-        @media print {
-            html, body {
-                background: white !important;
-                color: black !important;
-            }
-            /* Hide on print */
-            #print-toolbar {
-                display: none !important;
-            }
-            /* Remove drop shadows / extra spacing for print */
-            .container-print {
-                box-shadow: none !important;
-                margin: 0 !important;
-                padding: 0 !important;
-            }
-            /* Force two columns for the item list on paper */
-            #scavenger-list {
-                display: block !important;       /* override grid on screen */
-                column-count: 2;                 /* two columns on Letter paper */
-                column-gap: 0.5in;               /* comfortable gutter */
-            }
-            /* Keep rows intact within a column */
-            .item-row {
-                break-inside: avoid;
-                -webkit-column-break-inside: avoid;
-                page-break-inside: avoid;
-                border-bottom: 1px dashed #999 !important;
-                padding: 0.25rem 0 !important;
-            }
-            /* Make images print nicely */
-            img {
-                filter: grayscale(100%);
-            }
-        }
-
-        /* General styles for screen viewing */
+        /* Screen (default) */
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f8f8f8;
             color: #1f2937;
         }
         .container-print {
-            max-width: 8.5in; /* Standard paper width */
+            max-width: 8.5in;
             margin: 2rem auto;
             background: white;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 2rem;
         }
-        /* Style for the checkbox (for consistency when printed) */
         .custom-checkbox {
             width: 20px;
             height: 20px;
@@ -79,11 +41,53 @@
         .item-row {
             border-bottom: 1px dashed #cccccc;
         }
+
+        /* Print overrides */
+        @media print {
+            html, body {
+                background: white !important;
+                color: black !important;
+            }
+            #print-toolbar {
+                display: none !important;
+            }
+            .container-print {
+                box-shadow: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                max-width: 100% !important;
+                width: 100% !important;
+            }
+            /* Force multi-column for Safari & others */
+            #scavenger-list {
+                display: block !important; /* override Tailwind grid */
+                width: 100% !important;
+                column-count: 2;
+                -webkit-column-count: 2;
+                column-gap: 0.5in;
+                -webkit-column-gap: 0.5in;
+                column-fill: auto;
+            }
+            .item-row {
+                break-inside: avoid;
+                break-inside: avoid-column;
+                -webkit-column-break-inside: avoid;
+                page-break-inside: avoid;
+                display: flex; /* preserve inline layout across columns */
+                align-items: center;
+                border-bottom: 1px dashed #999 !important;
+                padding: 0.25rem 0 !important;
+                width: 100%;
+            }
+            img {
+                filter: grayscale(100%);
+            }
+        }
     </style>
 </head>
 <body>
 
-    <!-- Simple toolbar with a print action -->
+    <!-- Print toolbar -->
     <div id="print-toolbar" class="sticky top-0 z-10 bg-white/90 backdrop-blur border-b px-4 py-3">
         <div class="max-w-screen-md mx-auto flex items-center justify-between gap-4">
             <span class="text-sm text-gray-700">Ready to print this scavenger hunt?</span>
@@ -101,74 +105,86 @@
             <p class="text-sm mt-1 text-gray-700">Find the items that might be displaced by a severe storm.</p>
         </header>
 
-        <div id="scavenger-list" class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-            <!-- Scavenger Hunt Item Data -->
-            <script>
-                const items = [
-                    { name: "twigs", imageUrl: "https://www.shutterstock.com/image-vector/drawing-twig-branch-260nw-47416342.jpg" },
-                    { name: "rocks/pebbles", imageUrl: "https://img.freepik.com/premium-vector/pebble-outline-set-vector-illustration-stone-hand-drawn-graphic-clipart-rough-rock-linear-drawing-isolated-background-black-contour-line-art_538172-510.jpg" },
-                    { name: "picnic table", imageUrl: "https://img.freepik.com/premium-vector/black-white-drawing-picnic-table-with-wooden-bench_1322041-23090.jpg"},
-                    { name: "bottle", imageUrl: "https://c8.alamy.com/comp/2J21A19/vector-single-sketch-plastic-bottle-of-water-plastic-bottle-container-vector-sketch-illustration-2J21A19.jpg" },
-                    { name: "leaf", imageUrl: "https://svgcollections.com/wp-content/uploads/2024/07/fall_leaf_outline_jbP8U.png" },
-                    { name: "acorn", imageUrl: "https://images.template.net/467538/Acorn-Fall-Clipart-edit-online.png"},
-                    { name: "walnut", imageUrl: "https://thumbs.dreamstime.com/b/walnut-tree-sketch-vector-illustration-plant-engraving-t-shirt-apparel-print-design-scratch-board-imitation-black-white-hand-186505293.jpg" },
-                    { name: "mulch", imageUrl: "https://img.freepik.com/premium-photo/drawing-pile-wood-chips_1034059-94959.jpg" },
-                    { name: "fish", imageUrl: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fimages.template.net%2F466503%2FFish-Clipart-edit-online.png&f=1&ipt=25d842ee5ea227b32cdfb7aea2ecb56add09fdb87d44790315e8e19beadd4515" },
-                    { name: "bench", imageUrl: "https://www.shutterstock.com/image-vector/minimalist-single-line-drawing-park-260nw-2664666797.jpg" },
-                    { name: "tree", imageUrl: "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fclipart-library.com%2Fnewhp%2FTree_PNG_Clip_Art-2890.png&f=1&ipt=0797d98381fe2a07e83f28fab66950a70280957c22ae9d80d9b38dd1b620ecc5" },
-                    { name: "pine needles", imageUrl: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn.pixabay.com%2Fphoto%2F2021%2F11%2F26%2F19%2F11%2Fpine-needles-6826457_960_720.png&f=1&ipt=833d55efa631a817a3f5fca44842c89a32c8375120678f11a2c9bbb654e16a88" },
-                    { name: "grass", imageUrl: "https://static.vecteezy.com/system/resources/previews/051/002/940/non_2x/grass-illustration-line-art-vector.jpg" },
-                    { name: "water", imageUrl: "https://png.pngtree.com/png-clipart/20210418/original/pngtree-water-drop-line-art-vector-icon-png-image_6235939.png" },
-                    { name: "paper", imageUrl: "https://static.vecteezy.com/system/resources/previews/068/553/626/non_2x/line-drawing-of-a-crumpled-paper-ball-on-white-background-vector.jpg" }
-                ];
-
-                const listContainer = document.getElementById('scavenger-list');
-
-                items.forEach(item => {
-                    // Create the main item wrapper
-                    const itemDiv = document.createElement('div');
-                    itemDiv.className = 'item-row flex items-center p-2 rounded-lg';
-
-                    // Item Name
-                    const nameP = document.createElement('p');
-                    nameP.className = 'text-lg font-medium capitalize flex-grow';
-                    nameP.textContent = item.name;
-
-                    // Picture
-                    const img = document.createElement('img');
-                    img.src = item.imageUrl;
-                    img.alt = item.name;
-                    img.className = 'w-16 h-16 object-cover border border-gray-300 mr-4 ml-4 filter grayscale';
-                    img.onerror = function() {
-                        this.src = `https://placehold.co/64x64/ffffff/000000?text=B/W`;
-                    };
-
-                    // Checkbox
-                    const checkbox = document.createElement('div');
-                    checkbox.className = 'custom-checkbox flex-shrink-0';
-                    checkbox.title = "Check here when found";
-
-                    // Assemble the row: Name | Picture | Checkbox
-                    itemDiv.appendChild(nameP);
-                    itemDiv.appendChild(img);
-                    itemDiv.appendChild(checkbox);
-
-                    listContainer.appendChild(itemDiv);
-                });
-
-                // Print button wiring
-                window.addEventListener('DOMContentLoaded', () => {
-                    const btn = document.getElementById('print-button');
-                    if (btn) {
-                        btn.addEventListener('click', () => {
-                            /* small timeout helps some browsers apply final layout before print */
-                            setTimeout(() => window.print(), 0);
-                        });
-                    }
-                });
-            </script>
-        </div>
+        <!-- On screen we use Tailwind grid; print CSS will override -->
+        <div id="scavenger-list" class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4"></div>
     </div>
 
+    <script>
+        (function populateItems() {
+            const items = [
+                { name: "twigs", imageUrl: "https://www.shutterstock.com/image-vector/drawing-twig-branch-260nw-47416342.jpg" },
+                { name: "rocks/pebbles", imageUrl: "https://img.freepik.com/premium-vector/pebble-outline-set-vector-illustration-stone-hand-drawn-graphic-clipart-rough-rock-linear-drawing-isolate" },
+                { name: "picnic table", imageUrl: "https://img.freepik.com/premium-vector/black-white-drawing-picnic-table-with-wooden-bench_1322041-23090.jpg" },
+                { name: "bottle", imageUrl: "https://c8.alamy.com/comp/2J21A19/vector-single-sketch-plastic-bottle-of-water-plastic-bottle-container-vector-sketch-illustration-2J21A19.jpg" },
+                { name: "leaf", imageUrl: "https://svgcollections.com/wp-content/uploads/2024/07/fall_leaf_outline_jbP8U.png" },
+                { name: "acorn", imageUrl: "https://images.template.net/467538/Acorn-Fall-Clipart-edit-online.png" },
+                { name: "walnut", imageUrl: "https://thumbs.dreamstime.com/b/walnut-tree-sketch-vector-illustration-plant-engraving-t-shirt-apparel-print-design-scratch-board-imitation-black-white" },
+                { name: "mulch", imageUrl: "https://img.freepik.com/premium-photo/drawing-pile-wood-chips_1034059-94959.jpg" },
+                { name: "fish", imageUrl: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fimages.template.net%2F466503%2FFish-Clipart-edit-online.png&f=1" },
+                { name: "bench", imageUrl: "https://www.shutterstock.com/image-vector/minimalist-single-line-drawing-park-260nw-2664666797.jpg" },
+                { name: "tree", imageUrl: "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fclipart-library.com%2Fnewhp%2FTree_PNG_Clip_Art-2890.png&f=1" },
+                { name: "pine needles", imageUrl: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn.pixabay.com%2Fphoto%2F2021%2F11%2F26%2F19%2F11%2Fpine-needles-6826457_960_720.png&f=1" },
+                { name: "grass", imageUrl: "https://static.vecteezy.com/system/resources/previews/051/002/940/non_2x/grass-illustration-line-art-vector.jpg" },
+                { name: "water", imageUrl: "https://png.pngtree.com/png-clipart/20210418/original/pngtree-water-drop-line-art-vector-icon-png-image_6235939.png" },
+                { name: "paper", imageUrl: "https://static.vecteezy.com/system/resources/previews/068/553/626/non_2x/line-drawing-of-a-crumpled-paper-ball-on-white-background-vector.jpg" }
+            ];
+
+            const listContainer = document.getElementById('scavenger-list');
+            if (!listContainer) return;
+
+            items.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'item-row flex items-center p-2 rounded-lg';
+
+                const nameP = document.createElement('p');
+                nameP.className = 'text-lg font-medium capitalize flex-grow';
+                nameP.textContent = item.name;
+
+                const img = document.createElement('img');
+                img.src = item.imageUrl;
+                img.alt = item.name;
+                img.loading = "lazy";
+                img.className = 'w-16 h-16 object-cover border border-gray-300 mr-4 ml-4 filter grayscale';
+                img.onerror = function() {
+                    this.src = 'https://placehold.co/64x64/ffffff/000000?text=B/W';
+                };
+
+                const checkbox = document.createElement('div');
+                checkbox.className = 'custom-checkbox flex-shrink-0';
+                checkbox.title = "Check here when found";
+
+                itemDiv.appendChild(nameP);
+                itemDiv.appendChild(img);
+                itemDiv.appendChild(checkbox);
+
+                listContainer.appendChild(itemDiv);
+            });
+        })();
+
+        // Ensure Safari applies column layout before printing
+        function prepareForPrint() {
+            const list = document.getElementById('scavenger-list');
+            if (list) {
+                // Defensive: remove grid display if still present
+                list.classList.remove('grid', 'grid-cols-1', 'md:grid-cols-2');
+                list.style.display = 'block';
+            }
+        }
+
+        window.addEventListener('beforeprint', prepareForPrint);
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('print-button');
+            if (btn) {
+                btn.addEventListener('click', () => {
+                    // Flush layout twice for Safari
+                    prepareForPrint();
+                    requestAnimationFrame(() => {
+                        setTimeout(() => window.print(), 0);
+                    });
+                });
+            }
+        });
+    </script>
 </body>
 </html>
